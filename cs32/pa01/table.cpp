@@ -6,7 +6,7 @@
 #include "table.h"
 using namespace std;
 
-Table::Table( unsigned int max_entries ) { // an array of std::list to enable chaining woohoo
+Table::Table( unsigned int max_entries ) { // an array of list to allow chaining
     numEntries = 0;
     CAPACITY = max_entries*2;
     datatable = new list<Entry> [ CAPACITY ];
@@ -46,7 +46,9 @@ void Table::put(unsigned int key, std::string data){
         datatable[ index ].push_back( newentry );
     }
     else{ // check for a duplicate
-        for (list<Entry>::iterator it = datatable[ index ].begin(), end = datatable[ index ].end(); it != end; ++it){ // check each element in spot j
+        for (list<Entry>::iterator it = datatable[ index ].begin(),
+                                  end = datatable[ index ].end();
+                                  it != end; ++it){ // check each element in j
             if ( it->get_key() == key ){ // if you find one erase it
                 datatable[ index ].erase( it );
                 break;
@@ -65,9 +67,11 @@ void Table::put(Entry e){
         numEntries++;
     }
     else{ // check for a duplicate
-        for (list<Entry>::iterator it = datatable[ index ].begin(), end = datatable[ index ].end(); it != end; ++it){ // check each element in spot j
-            if ( it->get_key() == e.get_key() ){ // if you find one erase it
-                datatable[ index ].erase( it );
+        for (list<Entry>::iterator it = datatable[ index ].begin(),
+                                  end = datatable[ index ].end();
+                                  it != end; ++it){ // check each element in j
+            if ( it->get_key() == e.get_key() ){
+                datatable[ index ].erase( it ); // if you find one erase it
                 break;
             }
         }
@@ -81,7 +85,9 @@ std::string Table::get(unsigned int key) const{
         return "";
     }
     else{ // check for a duplicate
-        for (list<Entry>::iterator it = datatable[ index ].begin(), end = datatable[ index ].end(); it != end; ++it){ // check each element in spot j
+        for (list<Entry>::iterator it = datatable[ index ].begin(),
+                                  end = datatable[ index ].end();
+                                  it != end; ++it){ // check each element in j
             if ( it->get_key() == key ) return it->get_data();
         }
     }
@@ -93,7 +99,9 @@ bool Table::remove(unsigned int key){
         return false;
     }
     else{ // check for a duplicate
-        for (list<Entry>::iterator it = datatable[ index ].begin(), end = datatable[ index ].end(); it != end; ++it){ // check each element in spot j
+        for (list<Entry>::iterator it = datatable[ index ].begin(),
+                                  end = datatable[ index ].end();
+                                  it != end; ++it){ // check each element in j
             if ( it->get_key() == key ){
                 datatable[ index ].erase( it );
                 --numEntries;
@@ -125,12 +133,22 @@ Table& Table::operator = ( const Table &t ){
     if ( CAPACITY != t.CAPACITY ){
         delete [] datatable;
         datatable = new list<Entry> [ t.CAPACITY ];
+        /*
+        on submit.cs the code above would fail and I had to do it this way:
+
+        list<Entry> *temp;
+        temp = new list<Entry> [ t.CAPACITY ];
+        delete [] datatable;
+        datatable = temp;
+
+        looking back, I probably should have used a vector of list<Entry>
+        */
     }
     for ( int i = 0; i < t.CAPACITY; ++i ){
         datatable[i] = t.datatable[i];
     }
     numEntries = t.numEntries;
     CAPACITY = t.CAPACITY;
-    
+
     return *this;
 }
